@@ -14,7 +14,7 @@ function App() {
 
   const fetchBurnout = async () => {
     try {
-      const response = await fetch('http://localhost:8000/burnout/score');
+      const response = await fetch('https://jubilant-space-waffle-q79qq4wppxvg294jg-8000.app.github.dev/burnout/score');
       const data = await response.json();
       setBurnoutData(data);
     } catch (err) {
