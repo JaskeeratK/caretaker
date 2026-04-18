@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from models.journal import JournalEntry
 from routers.auth import get_current_user
 from services.encryption import encrypt_content
-from services.gemini import get_chat_response # Or use a specific analysis function
+from services.pattern_engine import analyze_unsaid_patterns
 from firebase_admin import firestore
 import google.generativeai as genai
 import os
@@ -15,51 +15,57 @@ async def vent_to_vault(entry: JournalEntry, user: dict = Depends(get_current_us
     db = firestore.client()
 
     if not entry.content.strip():
-        raise HTTPException(status_code=400, detail="Venting content cannot be empty")
+        raise HTTPException(status_code=400, detail="Content cannot be empty.")
 
-    # 1. Encryption (Privacy first)
+    # 1. Encrypt for privacy
     encrypted_text = encrypt_content(entry.content, uid)
 
-    # 2. Extract Sentiment Score for the Burnout Index
-    # We ask Gemini to return a simple float so we don't store the raw text
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    # 2. Get sentiment score from Gemini
+    model = genai.GenerativeModel("gemini-1.5-flash")
     analysis_prompt = (
-        f"Analyze the following caretaker journal entry for emotional exhaustion. "
-        f"Return ONLY a numerical score between 0.0 (peaceful) and 1.0 (total burnout/crisis). "
+        "Analyze the following caretaker journal entry for emotional exhaustion. "
+        "Return ONLY a numerical score between 0.0 (peaceful) and 1.0 (total burnout/crisis). "
         f"Content: {entry.content}"
     )
-    
     try:
         response = model.generate_content(analysis_prompt)
-        # Clean the response to ensure it's just a number
         score = float(response.text.strip())
-    except:
-        score = 0.5 # Neutral fallback
+        score = max(0.0, min(1.0, score))
+    except Exception:
+        score = 0.5
 
     # 3. Save to Firestore
-    journal_data = {
+    db.collection("journals").add({
         "uid": uid,
         "encrypted_note": encrypted_text,
         "sentiment_score": score,
-        "created_at": firestore.SERVER_TIMESTAMP
-    }
-    
-    db.collection("journals").add(journal_data)
-    
+        "mood": entry.mood,
+        "created_at": firestore.SERVER_TIMESTAMP,
+    })
+
     return {
-        "status": "Released", 
+        "status": "Released",
         "message": "Your thoughts have been safely encrypted and released.",
-        "perceived_stress": score
+        "perceived_stress": score,
     }
 
+
 @router.get("/stats")
-async def get_journal_history(user: dict = Depends(get_current_user)):
-    """Returns only the stress trends, never the raw text."""
+async def get_journal_stats(user: dict = Depends(get_current_user)):
+    """Returns mood trends and unsaid pattern analysis. Never returns raw text."""
     db = firestore.client()
-    docs = db.collection("journals") \
-             .where("uid", "==", user["uid"]) \
-             .order_by("created_at", direction=firestore.Query.DESCENDING) \
-             .limit(7) \
-             .stream()
-             
-    return [{"time": d.to_dict()["created_at"], "stress": d.to_dict()["sentiment_score"]} for d in docs]
+    docs = (
+        db.collection("journals")
+        .where("uid", "==", user["uid"])
+        .order_by("created_at", direction=firestore.Query.DESCENDING)
+        .limit(7)
+        .stream()
+    )
+    entries = [d.to_dict() for d in docs]
+    mood_trend = [
+        {"time": e.get("created_at"), "stress": e.get("sentiment_score", 0.5), "mood": e.get("mood")}
+        for e in entries
+    ]
+    unsaid = analyze_unsaid_patterns(entries)
+
+    return {"mood_trend": mood_trend, "unsaid_patterns": unsaid}
