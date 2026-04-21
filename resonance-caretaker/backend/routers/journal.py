@@ -36,11 +36,10 @@ async def vent_to_vault(entry: JournalEntry, user: dict = Depends(get_current_us
 
     # 3. Save to Firestore
     db.collection("journals").add({
-        "uid": uid,
-        "encrypted_note": encrypted_text,
-        "sentiment_score": score,
-        "mood": entry.mood,
-        "created_at": firestore.SERVER_TIMESTAMP,
+       "uid": "test_user",
+       "content": entry.content,
+       "created_at": datetime.now(),
+       "sentiment_score": sentiment_score # Use the score from Gemini
     })
 
     return {
