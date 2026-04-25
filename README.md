@@ -192,6 +192,6 @@ Resonance directly addresses **UN Sustainable Development Goal 3: Good Health an
 
 *Built with care, for caretakers.*
 
-**Google Solution Challenge 2025 · Team JXM**
+**Google Solution Challenge 2026 · Team JXM**
 
 </div>
