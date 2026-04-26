@@ -6,7 +6,8 @@
 **A psychosocial wellness platform for the invisible patient , the family caretaker.**
 
 *Google Solution Challenge 2026 · Team JXM*
-*Live MVP [here](https://caretakerresonace.netlify.app/)*
+
+**Live MVP [here](https://caretakerresonace.netlify.app/)**
 ---
 
 ![Tech Stack](https://img.shields.io/badge/Frontend-React-61DAFB?style=flat-square&logo=react)
