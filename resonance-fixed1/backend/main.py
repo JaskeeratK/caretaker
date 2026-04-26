@@ -14,13 +14,23 @@ def init_firebase():
         import firebase_admin
         from firebase_admin import credentials
         if not firebase_admin._apps:
-            cred_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
-            if cred_path and os.path.exists(cred_path):
-                cred = credentials.Certificate(cred_path)
+            # Option 1: JSON string in env var (for Render/cloud deployment)
+            cred_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
+            if cred_json:
+                import json
+                cred_dict = json.loads(cred_json)
+                cred = credentials.Certificate(cred_dict)
                 firebase_admin.initialize_app(cred)
-                print("✓ Firebase initialized")
+                print("✓ Firebase initialized from env var")
+            # Option 2: File path (for local/Codespaces)
             else:
-                print("⚠ Firebase credentials not found — running in demo mode")
+                cred_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
+                if cred_path and os.path.exists(cred_path):
+                    cred = credentials.Certificate(cred_path)
+                    firebase_admin.initialize_app(cred)
+                    print("✓ Firebase initialized from file")
+                else:
+                    print("⚠ Firebase credentials not found — running in demo mode")
     except Exception as e:
         print(f"⚠ Firebase init skipped: {e}")
 
@@ -33,12 +43,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from routers import auth, chat, journal, burnout
+from routers import auth, chat, journal, burnout, groups
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(chat.router, prefix="/chat", tags=["chat"])
 app.include_router(journal.router, prefix="/journal", tags=["journal"])
 app.include_router(burnout.router, prefix="/burnout", tags=["burnout"])
+app.include_router(groups.router, prefix="/groups", tags=["groups"])
 
 @app.get("/")
 def read_root():
