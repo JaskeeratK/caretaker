@@ -1,3 +1,6 @@
+<img width="1358" height="644" alt="Capture" src="https://github.com/user-attachments/assets/c6642d57-c364-481c-8d7e-be4160fd50cc" />
+
+
 <div align="center">
 
 # RESONANCE
