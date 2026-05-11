@@ -1,12 +1,12 @@
 export const theme = {
   colors: {
     // Dark forest greens - primary palette
-    bg: "#1A2B14",
-    bgMid: "#223318",
-    bgCard: "#2A3D1E",
-    bgCardHover: "#324825",
-    border: "#3D5429",
-    borderLight: "#4A6333",
+    bg: "#06402B",
+    bgMid: "#0F4533",
+    bgCard: "#1A4D38",
+    bgCardHover: "#1F5A42",
+    border: "#2A6B50",
+    borderLight: "#3A8060",
     
     // Warm accent
     gold: "#C9A84C",
@@ -25,7 +25,7 @@ export const theme = {
     danger: "#B54040",
   },
   fonts: {
-    serif: "'Cormorant Garamond', serif",
+    serif: "'Instrument Serif', serif",
     sans: "'DM Sans', sans-serif",
   }
 };
