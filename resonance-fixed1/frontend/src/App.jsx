@@ -6,6 +6,8 @@ import DashboardPage from './pages/DashboardPage';
 export default function App() {
   const [view, setView] = useState('landing');
   const [user, setUser] = useState(null);
+  // const [view, setView] = useState('dashboard');
+  // const [user, setUser] = useState({ name: 'Jaskeerat', email: 'test@example.com', role: 'family' });
 
   useEffect(() => {
     const saved = localStorage.getItem('resonance_user');

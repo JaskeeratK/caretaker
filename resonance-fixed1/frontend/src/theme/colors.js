@@ -3,8 +3,8 @@ export const theme = {
     // Dark forest greens - primary palette
     bg: "#06402B",
     bgMid: "#0F4533",
-    bgCard: "#1A4D38",
-    bgCardHover: "#1F5A42",
+    bgCard: "#0a5c3e",
+    bgCardHover: '#0d6645',
     border: "#2A6B50",
     borderLight: "#3A8060",
     

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { theme } from '../theme/colors';
 import { apiFetch } from '../api';
 
@@ -16,7 +16,14 @@ export default function JournalPage({ user, entries, setEntries }) {
   const [text, setText] = useState('');
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
-
+  useEffect(() => {
+    if (!user?.email) return;
+    apiFetch(`/journal/entries?user_email=${encodeURIComponent(user.email)}`)
+      .then(data => {
+        if (data?.entries?.length) setEntries(data.entries);
+      })
+      .catch(err => console.error("Failed to load entries:", err));
+  }, [user?.email]);
   const canSave = mood !== null && text.trim().length > 10;
 
   const handleSave = async () => {

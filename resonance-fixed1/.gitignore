@@ -64,3 +64,5 @@ build/
 # =========================
 *.pid
 *.seed
+
+backend/test.py
