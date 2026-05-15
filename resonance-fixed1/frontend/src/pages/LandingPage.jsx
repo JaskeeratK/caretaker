@@ -135,12 +135,12 @@ export default function LandingPage({ onGetStarted, onLogin }) {
               fontFamily: theme.fonts.serif,
               fontWeight: 300,
             }}>
-              There are millions of family caretakers globally who manage
-              the lives of others — be it elderly parents, children with
-              disabilities, or spouses with chronic illnesses. While the
-              "primary patient" receives medical attention, the caretaker
-              often becomes the <em>"Second Patient,"</em> suffering from extreme
-              emotional exhaustion, isolation, and burnout.
+              Being a caretaker is the hardest job in the world—not just because of the labor,
+              but because of the silence. You manage the appointments, the medications, and the emotions of others, 
+              often while your own needs are tucked away in the shadows. We built Resonance because the 'Second Patient' 
+              shouldn't have to suffer in isolation. This is your dedicated space to offload the heavy thoughts,
+              find a community that truly understands the grind, and reclaim a piece of yourself. 
+              You spend your life carrying the weight for them; let us help carry the weight for you.
             </p>
 
             <button onClick={onGetStarted} style={{
