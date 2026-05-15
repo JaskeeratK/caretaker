@@ -9,9 +9,8 @@
 *Google Solution Challenge 2026 · Team JXM*
 
 ---
-<img width="1363" height="663" alt="Capture2" src="https://github.com/user-attachments/assets/ac9c7f3c-5cc8-4692-9b88-b75e23507b4d" />
-<img width="1365" height="651" alt="Capture3" src="https://github.com/user-attachments/assets/9d51313b-d9f0-464b-a497-af786413779f" />
-<img width="1364" height="652" alt="Capture4" src="https://github.com/user-attachments/assets/c8f0ec18-92f2-4b1b-b9dc-e1a1f4fec8bb" />
+<img width="1364" height="657" alt="brownlanding" src="https://github.com/user-attachments/assets/f49c2103-7145-4159-bec9-f75719b484fd" />
+<img width="1364" height="657" alt="brown2" src="https://github.com/user-attachments/assets/5ce8c6df-5057-4d65-aeda-71666b9b8427" />
 
 ![Tech Stack](https://img.shields.io/badge/Frontend-React-61DAFB?style=flat-square&logo=react)
 ![Backend](https://img.shields.io/badge/Backend-FastAPI-009688?style=flat-square&logo=fastapi)
