@@ -10,7 +10,8 @@
 
 ---
 <img width="1364" height="657" alt="brownlanding" src="https://github.com/user-attachments/assets/f49c2103-7145-4159-bec9-f75719b484fd" />
-<img width="1364" height="657" alt="brown2" src="https://github.com/user-attachments/assets/5ce8c6df-5057-4d65-aeda-71666b9b8427" />
+<img width="1360" height="653" alt="Capture" src="https://github.com/user-attachments/assets/0ebe8980-8574-4b9b-9f64-6f06d23a4d19" />
+
 
 ![Tech Stack](https://img.shields.io/badge/Frontend-React-61DAFB?style=flat-square&logo=react)
 ![Backend](https://img.shields.io/badge/Backend-FastAPI-009688?style=flat-square&logo=fastapi)
