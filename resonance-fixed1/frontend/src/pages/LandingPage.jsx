@@ -31,7 +31,7 @@ export default function LandingPage({ onGetStarted, onLogin }) {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr 1fr',
         alignItems: 'center',
-        background: scrolled ? 'rgba(13,59,46,0.95)' : 'transparent',
+        background: scrolled ? '#1A1714' : 'transparent',
         backdropFilter: scrolled ? 'blur(12px)' : 'none',
         borderBottom: scrolled ? `1px solid ${c.border}` : 'none',
         transition: 'all 0.3s ease',
