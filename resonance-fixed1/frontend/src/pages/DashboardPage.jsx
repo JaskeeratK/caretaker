@@ -23,7 +23,15 @@ export default function DashboardPage({ user, onLogout }) {
   const [burnoutData, setBurnoutData] = useState({ score: 42, zone: 'Warning', narrative: '' });
   const [ventText, setVentText] = useState('');
   const [isReleasing, setIsReleasing] = useState(false);
-
+  useEffect(() => {
+  if (!user?.email) return;
+  apiFetch(`/journal/entries?user_email=${encodeURIComponent(user.email)}`)
+    .then(data => {
+      console.log("Dashboard fetched entries:", data); // ← add this
+      if (data?.entries?.length) setEntries(data.entries);
+    })
+    .catch(err => console.error("Failed to load entries:", err));
+}, [user?.email]);
   useEffect(() => { fetchBurnout(); }, []);
 
   const fetchBurnout = async () => {
@@ -96,38 +104,67 @@ export default function DashboardPage({ user, onLogout }) {
             {/* TOP ROW: open journal left, venting vault right */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem', marginBottom: '1rem' }}>
 
-              {/* LEFT: Open Journal card — no burnout, just the action */}
-              <div style={{ background: c.bgCard, border: `1px solid ${c.border}`, borderRadius: '20px', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
-                {/* Journal image replacing the SVG */}
-                <img 
-                  src="/journal.png" 
-                  alt="Journal" 
-                  style={{ width: '200px', height: '200px', objectFit: 'contain' }} 
+              {/* LEFT: Open Journal card */}
+              <div
+                style={{ background: c.bgCard, border: `1px solid ${c.border}`, borderRadius: '20px', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', transition: 'all 0.3s ease' }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = c.bg;
+                  e.currentTarget.style.borderColor = c.borderLight;
+                  const img = e.currentTarget.querySelector('img.journal-img');
+                  if (img) img.src = '/journal.png';
+                  const h3 = e.currentTarget.querySelector('h3');
+                  if (h3) h3.style.color = c.bone;
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = c.bgCard;
+                  e.currentTarget.style.borderColor = c.border;
+                  const img = e.currentTarget.querySelector('img.journal-img');
+                  if (img) img.src = '/journal2.png';
+                  const h3 = e.currentTarget.querySelector('h3');
+                  if (h3) h3.style.color = c.textPrimary;
+                }}>
+                <img
+                  className="journal-img"
+                  src="/journal2.png"
+                  alt="Journal"
+                  style={{ width: '200px', height: '200px', objectFit: 'contain' }}
                 />
-  
+
                 <div style={{ textAlign: 'center' }}>
-                  <h3 style={{ fontFamily: theme.fonts.serif, fontSize: '1.55rem', fontWeight: 400, color: c.bone, marginBottom: '0.35rem' }}>Open Journal</h3>
+                  <h3 style={{ fontFamily: theme.fonts.serif, fontSize: '1.55rem', fontWeight: 400, color: c.textPrimary, marginBottom: '0.35rem', transition: 'color 0.3s ease' }}>Open Journal</h3>
                   <p style={{ fontSize: '0.78rem', color: c.textMuted }}>Your private space to write freely</p>
                 </div>
                 <button onClick={() => setTab('journal')} style={{ marginTop: '0.5rem', background: 'transparent', border: `1px solid ${c.border}`, borderRadius: '2px', color: c.textSecondary, fontSize: '0.75rem', letterSpacing: '1.5px', textTransform: 'uppercase', padding: '0.5rem 1rem', transition: 'all 0.2s', cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = c.borderLight; e.currentTarget.style.color = c.bone; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = c.borderLight; e.currentTarget.style.color = c.textPrimary; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = c.border; e.currentTarget.style.color = c.textSecondary; }}>
                   Write →
                 </button>
               </div>
 
               {/* RIGHT: Venting vault */}
-              <div style={{ background: c.bgCard, border: `1px solid ${c.border}`, borderRadius: '20px', padding: '1.5rem' }}>
+              <div
+                style={{ background: c.bgCard, border: `1px solid ${c.border}`, borderRadius: '20px', padding: '1.5rem', transition: 'all 0.3s ease' }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = c.bg;
+                  e.currentTarget.style.borderColor = c.borderLight;
+                  const h3 = e.currentTarget.querySelector('h3');
+                  if (h3) h3.style.color = c.bone;
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = c.bgCard;
+                  e.currentTarget.style.borderColor = c.border;
+                  const h3 = e.currentTarget.querySelector('h3');
+                  if (h3) h3.style.color = c.textPrimary;
+                }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                   <div>
-                    <h3 style={{ fontFamily: theme.fonts.serif, fontSize: '1.55rem', fontWeight: 400, color: c.bone }}>Venting Vault</h3>
+                    <h3 style={{ fontFamily: theme.fonts.serif, fontSize: '1.55rem', fontWeight: 400, color: c.textPrimary, transition: 'color 0.3s ease' }}>Venting Vault</h3>
                     <p style={{ fontSize: '0.78rem', color: c.textMuted, marginTop: '3px' }}>Your words stay private. They fade as you pour them out.</p>
                   </div>
-                  
                 </div>
                 <textarea value={ventText} onChange={e => setVentText(e.target.value)} disabled={isReleasing}
                   placeholder="What is feeling heavy today?"
-                  style={{ width: '100%', minHeight: '180px', background: c.bg, border: `1px solid ${c.border}`, borderRadius: '2px', padding: '1rem', fontFamily: theme.fonts.serif, fontSize: '1.05rem', color: `rgba(229,215,196,${Math.max(0.2, 1 - (ventText.length / 600))})`, resize: 'none', outline: 'none', opacity: isReleasing ? 0 : 1, transition: 'color 0.6s ease, opacity 1s ease', lineHeight: 1.7, boxSizing: 'border-box' }}
+                  style={{ width: '100%', minHeight: '180px', background: c.bgInput, border: `1px solid ${c.border}`, borderRadius: '2px', padding: '1rem', fontFamily: theme.fonts.serif, fontSize: '1.05rem', color: `rgba(229,215,196,${Math.max(0.2, 1 - (ventText.length / 600))})`, resize: 'none', outline: 'none', opacity: isReleasing ? 0 : 1, transition: 'color 0.6s ease, opacity 1s ease', lineHeight: 1.7, boxSizing: 'border-box' }}
                   onFocus={e => e.target.style.borderColor = c.borderLight}
                   onBlur={e => e.target.style.borderColor = c.border} />
                   <button onClick={handleVentRelease} disabled={!ventText.trim() || isReleasing} style={{ padding: '0.55rem 1.2rem', background: ventText.trim() ? c.bgCardHover : 'transparent', border: `1px solid ${ventText.trim() ? c.borderLight : c.border}`, borderRadius: '2px', color: ventText.trim() ? c.bone : c.textMuted, fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', transition: 'all 0.2s', cursor: ventText.trim() ? 'pointer' : 'default' }}>
@@ -156,53 +193,82 @@ export default function DashboardPage({ user, onLogout }) {
           label: 'Peer Groups',
           sub: 'People who get it',
           illustration: (
-            <img 
-                  src="/peergroup.png" 
-                  alt="peergroup" 
-                  style={{ 
-                    height: '150px', 
-                    width: '350px', 
-                    objectFit: 'contain',
-                }} 
-                />
-  
+            <img
+              src="/peergroup.png"
+              alt="peergroup"
+              style={{
+                height: '150px',
+                width: '350px',
+                objectFit: 'contain',
+              }}
+            />
           ),
         },
-      ].map(card => (
-        <button key={card.id} onClick={() => setTab(card.id)} style={{ 
-          background: c.bgCard, 
-          border: `1px solid ${c.border}`, 
-          borderRadius: '20px', 
-          padding: '1.75rem', 
-          minHeight: '160px', 
-          textAlign: 'left', 
-          transition: 'all 0.2s', 
-          cursor: 'pointer', 
-          display: 'flex', 
-          flexDirection: 'row', 
-          alignItems: 'center', 
-          justifyContent: 'space-between', // ← spreads text left, image right
-          gap: '1.25rem',
-          overflow: 'hidden', // ← keeps image clipped inside card
-        }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = c.borderLight; e.currentTarget.style.background = c.bgCardHover; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = c.border; e.currentTarget.style.background = c.bgCard; }}>
-  
-        {/* Text on the left */}
-        <div>
-          <h3 style={{ fontFamily: theme.fonts.serif, fontSize: '1.55rem', fontWeight: 400, color: c.bone, marginBottom: '0.35rem' }}>{card.label}</h3>
-          <div style={{ fontSize: '0.74rem', color: c.textMuted }}>{card.sub}</div>
-        </div>
+    ].map(card => (
+  <button
+    key={card.id}
+    onClick={() => setTab(card.id)}
+    style={{
+      background: c.bgCard,
+      border: `1px solid ${c.border}`,
+      borderRadius: '20px',
+      padding: '1.75rem',
+      minHeight: '160px',
+      textAlign: 'left',
+      transition: 'all 0.3s ease',
+      cursor: 'pointer',
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: '1.25rem',
+      overflow: 'hidden',
+    }}
+    onMouseEnter={e => {
+      // Blend into the page background
+      e.currentTarget.style.background = c.bg;
+      e.currentTarget.style.borderColor = c.borderLight;
+      // Text shifts to the card's former lighter color
+      const title = e.currentTarget.querySelector('h3');
+      if (title) title.style.color = c.bone;
+    }}
+    onMouseLeave={e => {
+      e.currentTarget.style.background = c.bgCard;
+      e.currentTarget.style.borderColor = c.border;
+      const title = e.currentTarget.querySelector('h3');
+      if (title) title.style.color = c.textPrimary;
+    }}>
 
-        {/* Illustration on the right */}
-        <div style={{ flexShrink: 0 }}>{card.illustration}</div>
+    <div>
+      <h3 style={{
+        fontFamily: theme.fonts.serif,
+        fontSize: '1.55rem',
+        fontWeight: 400,
+        color: c.textPrimary,
+        marginBottom: '0.35rem',
+        transition: 'color 0.3s ease',
+      }}>
+        {card.label}
+      </h3>
+      <div style={{ fontSize: '0.74rem', color: c.textMuted }}>{card.sub}</div>
+    </div>
 
-      </button>
-      ))}
+    <div style={{ flexShrink: 0 }}>{card.illustration}</div>
+  </button>
+))}
     </div>
 
     {/* BURNOUT — at the bottom, scrolls into view naturally */}
-    <div style={{ background: c.bgCard, border: `1px solid ${c.border}`, borderRadius: '20px', padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+    <div
+      style={{ background: c.bgCard, border: `1px solid ${c.border}`, borderRadius: '20px', padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap', transition: 'all 0.3s ease' }}
+      onMouseEnter={e => {
+        e.currentTarget.style.background = c.bg;
+        e.currentTarget.style.borderColor = c.borderLight;
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.background = c.bgCard;
+        e.currentTarget.style.borderColor = c.border;
+      }}>
       <ScoreGauge score={burnoutData.score} zone={burnoutData.zone} />
       <div style={{ flex: 1, minWidth: '180px' }}>
         <p style={{ fontSize: '0.7rem', letterSpacing: '1.5px', color: c.textMuted, textTransform: 'uppercase', marginBottom: '0.5rem' }}>How you've been</p>

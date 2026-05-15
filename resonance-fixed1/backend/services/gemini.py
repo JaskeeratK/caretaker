@@ -27,18 +27,17 @@ FALLBACK_RESPONSES = [
     "Take a slow breath. You are doing something incredibly hard, and you deserve care too.",
     "I hear you. Is there one small thing — even tiny — you could do for yourself today?",
 ]
-
+import google.generativeai as genai
 def _call_gemini(prompt: str) -> str:
-    from google import genai
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise Exception("No API key")
-    client = genai.Client(api_key=api_key)
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=prompt,
-        config={"system_instruction": CARETAKER_SYSTEM_PROMPT}
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel(
+        model_name="gemini-2.5-flash",
+        system_instruction=CARETAKER_SYSTEM_PROMPT
     )
+    response = model.generate_content(prompt)
     return response.text
 
 async def get_chat_response(message: str, burnout_context: str, journal_context: str = "") -> str:

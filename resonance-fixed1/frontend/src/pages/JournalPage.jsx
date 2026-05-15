@@ -17,13 +17,15 @@ export default function JournalPage({ user, entries, setEntries }) {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   useEffect(() => {
-    if (!user?.email) return;
-    apiFetch(`/journal/entries?user_email=${encodeURIComponent(user.email)}`)
-      .then(data => {
-        if (data?.entries?.length) setEntries(data.entries);
-      })
-      .catch(err => console.error("Failed to load entries:", err));
-  }, [user?.email]);
+  if (!user?.email) return;
+  apiFetch(`/journal/entries?user_email=${encodeURIComponent(user.email)}`)
+    .then(res => res.json())   // ← add this
+    .then(data => {
+      console.log("Dashboard fetched entries:", data);
+      if (data?.entries?.length) setEntries(data.entries);
+    })
+    .catch(err => console.error("Failed to load entries:", err));
+}, [user?.email]);
   const canSave = mood !== null && text.trim().length > 10;
 
   const handleSave = async () => {
@@ -73,10 +75,10 @@ export default function JournalPage({ user, entries, setEntries }) {
             <div key={e.ts} style={{ background: c.bgCard, border: `1px solid ${c.border}`, borderRadius: '2px', padding: '1rem 1.25rem', marginBottom: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span>{MOODS.find(m => m.score === e.mood)?.emoji}</span>
-                <span style={{ fontSize: '0.68rem', color: c.textSecondary, letterSpacing: '1px', textTransform: 'uppercase' }}>{e.moodLabel}</span>
+                <span style={{ fontSize: '0.68rem', color: c.textPrimary, letterSpacing: '1px', textTransform: 'uppercase' }}>{e.moodLabel}</span>
                 <span style={{ fontSize: '0.68rem', color: c.textMuted, marginLeft: 'auto' }}>{e.date}</span>
               </div>
-              <p style={{ fontSize: '0.88rem', color: c.textSecondary, fontFamily: theme.fonts.serif, fontStyle: 'italic', lineHeight: 1.7, margin: 0 }}>
+              <p style={{ fontSize: '0.88rem', color: c.textPrimary, fontFamily: theme.fonts.serif, lineHeight: 1.7, margin: 0 }}>
                 {e.text.length > 200 ? e.text.slice(0, 200) + '…' : e.text}
               </p>
             </div>
