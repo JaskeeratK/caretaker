@@ -28,13 +28,13 @@ export default function ChatPage({ user, entries, burnoutZone }) {
     setMessages(prev => [...prev, { role: 'user', text: msg }]);
     setLoading(true);
     try {
-      const res = await apiFetch('/chat/send', {
-        method: 'POST',
-        body: JSON.stringify({ message: msg, burnout_zone: burnoutZone, journal_context: entries.slice(0, 3).map(e => `Mood: ${e.moodLabel}. "${e.text.slice(0, 120)}"`).join('\n') }),
-      });
-      const data = await res.json();
-      setMessages(prev => [...prev, { role: 'ai', text: data.reply }]);
-    } catch {
+  const data = await apiFetch('/chat/send', {
+    method: 'POST',
+    body: JSON.stringify({ message: msg, burnout_zone: burnoutZone, journal_context: entries.slice(0, 3).map(e => `Mood: ${e.moodLabel}. "${e.text.slice(0, 120)}"`).join('\n') }),
+    history: messages.map(m => ({ role: m.role, text: m.text })),
+  });
+  setMessages(prev => [...prev, { role: 'ai', text: data.reply }]);
+} catch {
       setMessages(prev => [...prev, { role: 'ai', text: FALLBACKS[Math.floor(Math.random() * FALLBACKS.length)] }]);
     } finally { setLoading(false); }
   };

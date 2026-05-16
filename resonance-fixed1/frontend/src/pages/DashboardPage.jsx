@@ -32,14 +32,16 @@ export default function DashboardPage({ user, onLogout }) {
     })
     .catch(err => console.error("Failed to load entries:", err));
 }, [user?.email]);
-  useEffect(() => { fetchBurnout(); }, []);
+  useEffect(() => { if (user?.email) fetchBurnout(); }, [user?.email]);
 
   const fetchBurnout = async () => {
-    try {
-      const res = await apiFetch('/burnout/score');
-      if (res.ok) setBurnoutData(await res.json());
-    } catch { /* use defaults */ }
-  };
+  try {
+    const data = await apiFetch(`/burnout/score?user_email=${encodeURIComponent(user?.email || '')}`);
+    if (data?.score !== undefined) setBurnoutData(data);
+  } catch (e) {
+    console.error("Burnout fetch error:", e);
+  }
+};
 
   const handleVentRelease = async () => {
     if (!ventText.trim()) return;
